@@ -23,8 +23,8 @@ bindkey "^W" forward-word
 #ZSH_THEME="robbyrussell"
 ZSH_THEME="ys"
 
-source ~/.oh-my-zsh/plugins/incr/incr*.zsh
-source ~/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.oh-my-zsh/custom/plugins/incr/incr.zsh
+#source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -89,6 +89,7 @@ source ~/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 plugins=(
 	git
 	zsh-autosuggestions	
+	zsh-syntax-highlighting
 	)
 
 source $ZSH/oh-my-zsh.sh
