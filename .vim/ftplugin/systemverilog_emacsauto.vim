@@ -1,0 +1,1 @@
+/export/home/schalkiii/.vim/ftplugin/verilog_emacsauto.vim
