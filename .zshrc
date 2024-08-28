@@ -10,6 +10,9 @@ alias ga='git add -u'
 alias gs='git status'
 alias  h='history'
 
+export http_proxy=192.168.10.72:7890
+export https_proxy=192.168.10.72:7890
+
 bindkey "^B" backward-word
 bindkey "^W" forward-word
 
