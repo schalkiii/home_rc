@@ -16,6 +16,20 @@ export https_proxy=192.168.10.72:7890
 bindkey "^B" backward-word
 bindkey "^W" forward-word
 
+# 自动补全目录
+autoload -U compinit && compinit
+
+# 使用cd时，自动补全路径
+zstyle ':cd:*' max-directory-addresses 10000
+# 如果你想要cd补全包括隐藏目录，取消以下注释
+ zstyle ':cd:*' match-hidden yes
+# 如果你想要cd补全包括符号链接，取消以下注释
+ zstyle ':cd:*' include-symlinks yes
+# 如果你想要cd补全包括文件，取消以下注释
+ zstyle ':cd:*' include-files yes
+# 使用cdpath
+setopt AUTO_CD
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
