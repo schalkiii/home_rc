@@ -4,14 +4,14 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+#export http_proxy=192.168.10.72:7890
+#export https_proxy=192.168.10.72:7890
+
 alias gp='grep -nr --color \!* ./;'
 alias  g='gvim'
 alias ga='git add -u'
 alias gs='git status'
 alias  h='history'
-
-export http_proxy=192.168.10.72:7890
-export https_proxy=192.168.10.72:7890
 
 bindkey "^B" backward-word
 bindkey "^W" forward-word
@@ -29,6 +29,9 @@ zstyle ':cd:*' max-directory-addresses 10000
  zstyle ':cd:*' include-files yes
 # 使用cdpath
 setopt AUTO_CD
+
+# Allow cd to show file
+compdef '_files -/' cd
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
@@ -100,8 +103,9 @@ source ~/.oh-my-zsh/custom/plugins/incr/incr.zsh
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+
+#   git
 plugins=(
-	git
 	zsh-autosuggestions	
 	zsh-syntax-highlighting
 	)
