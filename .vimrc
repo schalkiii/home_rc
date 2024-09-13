@@ -117,6 +117,7 @@ syntax on
 
 let b:match_words='\<begin\>:\<end\>' 
 
+"i表示先进入输入模式
 imap <F2>  //--------Modified by Qi.Shao on<Esc>:r !date <CR><CR><Esc>kJ$a------v<Esc>o 
 map  <F2> o//--------Modified by Qi.Shao on<Esc>:r !date <CR><CR><Esc>kJ$a------v<Esc>j 
 
