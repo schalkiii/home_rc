@@ -1,3 +1,6 @@
 [submodule ".vim/pack/plugins/start/tabular"]
 	path = .vim/pack/plugins/start/tabular
 	url = https://github.com/godlygeek/tabular
+[submodule ".vim/pack/plugins/start/supertab"]
+	path = .vim/pack/plugins/start/supertab
+	url = https://github.com/ervandew/supertab
