@@ -4,12 +4,13 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-#export http_proxy=192.168.10.72:7890
-#export https_proxy=192.168.10.72:7890
+export http_proxy=http://192.168.10.72:7890
+export https_proxy=http://192.168.10.72:7890
+export all_proxy=socks5://192.168.10.72:7890
 
 alias gp='grep -nr --color \!* ./;'
 alias  g='gvim'
-alias ga='git add -u'
+alias ga='git add'
 alias gs='git status'
 alias  h='history'
 
