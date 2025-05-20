@@ -4,15 +4,19 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-export http_proxy=http://192.168.10.72:7890
-export https_proxy=http://192.168.10.72:7890
-export all_proxy=socks5://192.168.10.72:7890
-
 alias gp='grep -nr --color \!* ./;'
 alias  g='gvim'
 alias ga='git add'
 alias gs='git status'
 alias  h='history'
+#alias git='proxychains4 git'
+alias ss='source'
+
+#export http_proxy=http://192.168.10.72:7890
+#export https_proxy=http://192.168.10.72:7890
+#export all_proxy=socks5://192.168.10.72:7890
+
+export ZKVM_ROOT="~/workspace/zkvm_rtl_ver2"
 
 bindkey "^B" backward-word
 bindkey "^W" forward-word

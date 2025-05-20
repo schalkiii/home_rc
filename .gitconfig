@@ -1,0 +1,18 @@
+[credential "https://github.com"]
+        helper =
+        helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+        helper =
+        helper = !/usr/bin/gh auth git-credential
+[user]
+	name = schalkiii
+	email = schalkiii@cysic.xyz
+[http]
+	proxy = http://10.235.1.51:20171
+[https]
+	proxy = http://10.235.1.51:20171
+[core]
+	whitespace = trailing-space
+	excludesfile = /export/home/schalkiii/.gitignore_global
+[apply]
+	whitespace = fix
