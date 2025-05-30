@@ -8,12 +8,12 @@
 	name = schalkiii
 	email = schalkiii@cysic.xyz
 [http]
-	proxy = http://10.233.10.5:7890
+	proxy = 
 [https]
-	proxy = http://10.233.10.5:7890
+	proxy =
 [core]
 	whitespace = trailing-space
-	excludesfile = /export/home/schalkiii/.gitignore_global
+	excludesfile = ~/.gitignore_global
 [apply]
 	whitespace = fix
 [credential]
