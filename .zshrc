@@ -11,6 +11,9 @@ alias gs='git status'
 alias  h='history'
 #alias git='proxychains4 git'
 alias ss='source'
+alias t1='tree -C -L 1'
+alias t2='tree -C -L 2'
+alias t3='tree -C -L 3'
 
 #export http_proxy=http://192.168.10.72:7890
 #export https_proxy=http://192.168.10.72:7890
@@ -18,6 +21,8 @@ alias ss='source'
 
 export ZKVM_ROOT="~/workspace/zkvm_rtl_ver2"
 
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
 bindkey "^B" backward-word
 bindkey "^W" forward-word
 
