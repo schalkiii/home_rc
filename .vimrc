@@ -53,6 +53,8 @@ set smartcase
 "如果搜索包含大写字母，则区分大小写
 
 "缩进与制表符设置
+set ruler
+set cindent
 set expandtab
 set tabstop=4
 set softtabstop=4
@@ -105,6 +107,7 @@ if has("gui_running")
     " 设置 Vim 窗口宽度为 320 列，高度为 80 行
 else
     " 终端模式设置，避免退出 Vim 后终端不显示问题
+    colorscheme default
     set t_ti= t_te=
 
 endif
