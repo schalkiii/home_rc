@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# setup.sh - Offline Development Environment Setup
-# =================================================
+# setup_offline.sh - Offline Development Environment Setup
+# ========================================================
 # This script configures a Linux / WSL development environment using
 # ONLY local files from this repository. No network access required.
 #
@@ -14,12 +14,12 @@
 #
 # Usage:
 #   cd home_rc/
-#   chmod +x setup.sh
-#   ./setup.sh
+#   chmod +x setup_offline.sh
+#   ./setup_offline.sh
 #
 # Options:
-#   ./setup.sh --dry-run    Preview changes without modifying anything
-#   ./setup.sh --help       Show this help message
+#   ./setup_offline.sh --dry-run    Preview changes without modifying anything
+#   ./setup_offline.sh --help       Show this help message
 #
 
 set -euo pipefail
@@ -36,7 +36,6 @@ OFFLINE_ZSH_AUTOSUGGESTIONS="$SCRIPT_DIR/offline_src/zsh-autosuggestions"
 OFFLINE_ZSH_SYNTAX_HIGHLIGHTING="$SCRIPT_DIR/offline_src/zsh-syntax-highlighting"
 OFFLINE_VIM_TABULAR="$SCRIPT_DIR/offline_src/tabular"
 OFFLINE_VIM_SUPERTAB="$SCRIPT_DIR/offline_src/supertab"
-OFFLINE_VIM_SUPERTAB_VMB="$SCRIPT_DIR/offline_src/supertab.vmb"
 OFFLINE_VIM_NERDTREE="$SCRIPT_DIR/offline_src/nerdtree"
 
 # Target paths
@@ -309,23 +308,6 @@ install_vim_plugins() {
         warn "supertab offline source not found"
     fi
 
-    # supertab.vmb (legacy Vimball format)
-    if [ -f "$OFFLINE_VIM_SUPERTAB_VMB" ]; then
-        local vmb_installed=false
-        if command -v vim &>/dev/null; then
-            if vim --cmd "echo 'test'" -c "qall" &>/dev/null; then
-                warn "supertab.vmb found - install manually if needed:"
-                echo "         vim -c '%so' '$OFFLINE_VIM_SUPERTAB_VMB'"
-                echo "         (or with gvim): gvim -c '%so' '$OFFLINE_VIM_SUPERTAB_VMB'"
-                vmb_installed=true
-            fi
-        fi
-        if ! $vmb_installed; then
-            warn "supertab.vmb available at: $OFFLINE_VIM_SUPERTAB_VMB"
-            warn "Install manually with: vim -c '%so' '$OFFLINE_VIM_SUPERTAB_VMB'"
-        fi
-    fi
-
     # nerdtree
     if [ -f "$OFFLINE_VIM_NERDTREE/plugin/NERD_tree.vim" ]; then
         if [ ! -d "$VIM_PACK_DIR/nerdtree" ]; then
@@ -476,9 +458,9 @@ post_install_checks() {
 # ──────────────────────────────────────────────
 show_help() {
     cat <<EOF
-setup.sh - Offline Development Environment Setup
+setup_offline.sh - Offline Development Environment Setup
 
-Usage:  ./setup.sh [OPTION]
+Usage:  ./setup_offline.sh [OPTION]
 
 Options:
   --dry-run   Preview what the script would do, without making changes
@@ -498,8 +480,8 @@ It deploys:
 
 Run this script from the root of the home_rc repository:
   cd /path/to/home_rc
-  chmod +x setup.sh
-  ./setup.sh
+  chmod +x setup_offline.sh
+  ./setup_offline.sh
 EOF
     exit 0
 }

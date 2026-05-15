@@ -18,10 +18,18 @@ This repository stores my home directory configuration files (`~/.zshrc`, `~/.vi
 
 ## Quick Start
 
-### One-Command Setup (Linux / WSL)
+### One-Command Setup (Linux / WSL - Online)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/schalkiii/home_rc/main/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/schalkiii/home_rc/main/setup_wsl.sh)
+```
+
+### Offline Setup (Air-Gapped Environments)
+
+```bash
+cd home_rc
+chmod +x setup_offline.sh
+./setup_offline.sh
 ```
 
 ### Step-by-Step Setup
@@ -150,7 +158,7 @@ home_rc/
 ├── elisp/
 │   └── verilog-mode.el                # Verilog mode for Emacs
 ├── offline_src/                       # Plugin backups for offline use
-│   ├── supertab.vmb / supertab/
+│   ├── supertab/
 │   ├── tabular/
 │   ├── nerdtree/                      # NERDTree offline source
 │   ├── zsh-autosuggestions/
@@ -160,7 +168,6 @@ home_rc/
 ├── .gitmodules                        # Git submodules
 ├── .vimrc                             # Vim configuration
 ├── .zshrc                             # Zsh configuration
-├── setup.sh                           # Original setup script
 ├── setup_offline.sh                   # Offline setup script
 ├── setup_wsl.sh                       # WSL setup script
 └── README.md                          # This file
@@ -172,7 +179,6 @@ If you're on an air-gapped machine, the `offline_src/` directory contains all pl
 
 ```bash
 # For Vim plugins
-gvim -c "%so" offline_src/supertab.vmb
 cp -r offline_src/tabular ~/.vim/pack/plugins/start/
 cp -r offline_src/supertab ~/.vim/pack/plugins/start/
 cp -r offline_src/nerdtree ~/.vim/pack/plugins/start/
