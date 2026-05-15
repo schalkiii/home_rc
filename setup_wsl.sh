@@ -349,7 +349,20 @@ configure_wsl_root() {
     else
         printf '\n[user]\ndefault=root\n' >> "$wsl_conf"
     fi
-    ok "WSL default user set to root (restart WSL to take effect: wsl --shutdown)"
+    ok "WSL default user set to root"
+
+    echo ""
+    echo "=========================================="
+    echo "  WSL default user has been set to root."
+    echo "  Please restart WSL for this to take effect,"
+    echo "  then run this script again:"
+    echo ""
+    echo "    wsl --shutdown"
+    echo "    ./setup_wsl.sh"
+    echo ""
+    echo "  (All subsequent steps will then run as root.)"
+    echo "=========================================="
+    exit 0
 }
 
 # ──────────────────────────────────────────────
@@ -433,8 +446,7 @@ main() {
         echo "    1. Restart your terminal or run: zsh"
         echo "    2. Verify: zsh --version"
         echo "    3. Verify: vim --version"
-        echo "    4. Restart WSL to apply root login: wsl --shutdown"
-        echo "    5. Verify Verible: verible-verilog-ls --version"
+        echo "    4. Verify Verible: verible-verilog-ls --version"
         echo "=========================================="
     fi
 }

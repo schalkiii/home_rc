@@ -14,6 +14,7 @@ This repository stores my home directory configuration files (`~/.zshrc`, `~/.vi
 | **Editor** | `.vimrc`, `.vim/` | Vim with tabular, supertab & nerdtree plugins |
 | **Git** | `.gitconfig`, `.gitignore` | Git config with GitHub credential helper |
 | **Emacs** | `elisp/` | Verilog mode for HDL editing |
+| **Verible** | `offline_src/verible/` | Verilog/SystemVerilog lint, format & language server |
 | **Offline** | `offline_src/` | Plugin source backups for air-gapped install |
 
 ## Quick Start
@@ -88,11 +89,22 @@ For WSL (Windows Subsystem for Linux):
    ./setup_wsl.sh
    ```
 
+   > **First run**: The script sets WSL default user to **root**, then asks you to restart WSL.
+   > Run `wsl --shutdown` in PowerShell, restart your WSL terminal, and run `./setup_wsl.sh` again.
+   >
+   > **Second run**: The script detects root is already configured and proceeds with the full setup (Oh My Zsh, plugins, Verible, etc.) under the root account.
+
 3. Optionally configure Chinese apt mirrors for faster downloads:
    ```bash
    ./setup_wsl.sh --mirror ustc     # USTC mirror
    ./setup_wsl.sh --mirror aliyun   # Aliyun mirror
    ./setup_wsl.sh --mirror tuna     # Tsinghua mirror
+   ```
+
+4. Verify installation:
+   ```bash
+   zsh --version
+   verible-verilog-ls --version
    ```
 
 ## Configuration Details
@@ -161,6 +173,7 @@ home_rc/
 │   ├── supertab/
 │   ├── tabular/
 │   ├── nerdtree/                      # NERDTree offline source
+│   ├── verible/                       # Verible (Verilog/SystemVerilog tools)
 │   ├── zsh-autosuggestions/
 │   └── zsh-syntax-highlighting/
 ├── .gitconfig                         # Git configuration
@@ -186,6 +199,9 @@ cp -r offline_src/nerdtree ~/.vim/pack/plugins/start/
 # For Zsh plugins
 cp -r offline_src/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/
 cp -r offline_src/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/
+
+# For Verible (Verilog/SystemVerilog tools)
+sudo cp offline_src/verible/bin/* /usr/local/bin/
 ```
 
 ## Recommended Enhancements
