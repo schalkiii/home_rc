@@ -3,26 +3,59 @@
 # home_rc - WSL Environment Setup Script
 # =======================================
 # This script configures a WSL Ubuntu environment with:
+#   - Chinese apt mirror (optional)
 #   - Oh My Zsh (ys theme)
 #   - Zsh plugins: incr, zsh-autosuggestions, zsh-syntax-highlighting
-#   - Vim plugins: tabular, supertab
+#   - Vim plugins: tabular, supertab, nerdtree
 #   - Git configuration
 #   - Emacs verilog-mode (for FPGA/ASIC design)
 #
 # Usage:
 #   chmod +x setup_wsl.sh
 #   ./setup_wsl.sh
-#
-# For a dry run: ./setup_wsl.sh --dry-run
+#   ./setup_wsl.sh --mirror ustc    Use USTC mirror for apt
+#   ./setup_wsl.sh --mirror aliyun  Use Aliyun mirror for apt
+#   ./setup_wsl.sh --mirror tuna    Use Tsinghua mirror for apt
+#   ./setup_wsl.sh --dry-run        Preview without making changes
 #
 
 set -euo pipefail
 
 DRY_RUN=false
-if [[ "${1:-}" == "--dry-run" ]]; then
-    DRY_RUN=true
-    echo "[DRY RUN] Will not make any changes"
-fi
+MIRROR=""
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --mirror)
+                MIRROR="${2:-}"
+                if [[ -z "$MIRROR" ]]; then
+                    error "--mirror requires an argument: ustc|aliyun|tuna"
+                    exit 1
+                fi
+                shift 2
+                ;;
+            --help|-h)
+                echo "Usage: ./setup_wsl.sh [OPTION]"
+                echo ""
+                echo "Options:"
+                echo "  --dry-run           Preview without making changes"
+                echo "  --mirror MIRROR     Use Chinese apt mirror (ustc|aliyun|tuna)"
+                echo "  --help              Show this help message"
+                exit 0
+                ;;
+            *)
+                error "Unknown option: $1"
+                echo "Usage: ./setup_wsl.sh [--dry-run] [--mirror ustc|aliyun|tuna]"
+                exit 1
+                ;;
+        esac
+    done
+}
 
 info()  { echo -e "\033[1;34m[INFO]\033[0m $*"; }
 ok()    { echo -e "\033[1;32m[OK]\033[0m $*"; }
@@ -35,6 +68,55 @@ run() {
     else
         "$@"
     fi
+}
+
+# ──────────────────────────────────────────────
+# Step 0: Configure Chinese apt mirror
+# ──────────────────────────────────────────────
+configure_mirror() {
+    if [[ -z "$MIRROR" ]]; then
+        info "Step 0: Skipping apt mirror configuration (use --mirror to enable)"
+        return
+    fi
+
+    info "Step 0: Configuring apt mirror ($MIRROR)..."
+
+    local ubuntu_codename
+    ubuntu_codename="$(lsb_release -cs 2>/dev/null || :)"
+    if [[ -z "$ubuntu_codename" ]]; then
+        warn "Cannot detect Ubuntu codename, skipping mirror configuration"
+        return
+    fi
+
+    local mirror_url=""
+    case "$MIRROR" in
+        ustc)  mirror_url="https://mirrors.ustc.edu.cn" ;;
+        aliyun) mirror_url="https://mirrors.aliyun.com" ;;
+        tuna)  mirror_url="https://mirrors.tuna.tsinghua.edu.cn" ;;
+        *)
+            warn "Unknown mirror: $MIRROR (supported: ustc, aliyun, tuna)"
+            return
+            ;;
+    esac
+
+    if $DRY_RUN; then
+        echo "    Would replace /etc/apt/sources.list with $mirror_url"
+        return
+    fi
+
+    local sources_list="deb ${mirror_url}/ubuntu/ ${ubuntu_codename} main restricted universe multiverse
+deb ${mirror_url}/ubuntu/ ${ubuntu_codename}-updates main restricted universe multiverse
+deb ${mirror_url}/ubuntu/ ${ubuntu_codename}-backports main restricted universe multiverse
+deb ${mirror_url}/ubuntu/ ${ubuntu_codename}-security main restricted universe multiverse"
+
+    if [ -f /etc/apt/sources.list ]; then
+        cp /etc/apt/sources.list /etc/apt/sources.list.bak
+        info "Backed up /etc/apt/sources.list -> /etc/apt/sources.list.bak"
+    fi
+
+    echo "$sources_list" > /etc/apt/sources.list
+    apt-get update -qq
+    ok "Apt mirror configured: $mirror_url ($ubuntu_codename)"
 }
 
 # ──────────────────────────────────────────────
@@ -179,6 +261,13 @@ install_vim_plugins() {
     else
         warn "supertab already exists"
     fi
+
+    if [ ! -d "$vim_pack/nerdtree" ]; then
+        git clone https://github.com/preservim/nerdtree.git "$vim_pack/nerdtree"
+        ok "nerdtree installed"
+    else
+        warn "nerdtree already exists"
+    fi
 }
 
 # ──────────────────────────────────────────────
@@ -228,11 +317,14 @@ set_default_shell() {
 # Main
 # ──────────────────────────────────────────────
 main() {
+    parse_args "$@"
+
     echo "=========================================="
     echo "  home_rc - WSL Environment Setup"
     echo "=========================================="
     echo ""
 
+    configure_mirror
     install_packages
     install_oh_my_zsh
     apply_configs

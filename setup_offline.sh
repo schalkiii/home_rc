@@ -8,7 +8,7 @@
 # It installs:
 #   - Oh My Zsh (from bundled .oh-my-zsh/)
 #   - Zsh plugins (from offline_src/): incr, zsh-autosuggestions, zsh-syntax-highlighting
-#   - Vim plugins (from offline_src/): tabular, supertab
+#   - Vim plugins (from offline_src/): tabular, supertab, nerdtree
 #   - Shell/editor/git config files (.zshrc, .vimrc, .gitconfig)
 #   - Emacs verilog-mode (from elisp/)
 #
@@ -37,6 +37,7 @@ OFFLINE_ZSH_SYNTAX_HIGHLIGHTING="$SCRIPT_DIR/offline_src/zsh-syntax-highlighting
 OFFLINE_VIM_TABULAR="$SCRIPT_DIR/offline_src/tabular"
 OFFLINE_VIM_SUPERTAB="$SCRIPT_DIR/offline_src/supertab"
 OFFLINE_VIM_SUPERTAB_VMB="$SCRIPT_DIR/offline_src/supertab.vmb"
+OFFLINE_VIM_NERDTREE="$SCRIPT_DIR/offline_src/nerdtree"
 
 # Target paths
 OH_MY_ZSH_DIR="$HOME/.oh-my-zsh"
@@ -119,6 +120,7 @@ preflight_check() {
         "$OFFLINE_ZSH_AUTOSUGGESTIONS/zsh-autosuggestions.plugin.zsh"
         "$OFFLINE_VIM_TABULAR/plugin/Tabular.vim"
         "$OFFLINE_VIM_SUPERTAB/plugin/supertab.vim"
+        "$OFFLINE_VIM_NERDTREE/plugin/NERD_tree.vim"
     )
 
     for path in "${required_paths[@]}"; do
@@ -323,6 +325,24 @@ install_vim_plugins() {
             warn "Install manually with: vim -c '%so' '$OFFLINE_VIM_SUPERTAB_VMB'"
         fi
     fi
+
+    # nerdtree
+    if [ -f "$OFFLINE_VIM_NERDTREE/plugin/NERD_tree.vim" ]; then
+        if [ ! -d "$VIM_PACK_DIR/nerdtree" ]; then
+            run cp -r "$OFFLINE_VIM_NERDTREE" "$VIM_PACK_DIR/nerdtree"
+            ok "Installed nerdtree plugin"
+        else
+            if ! is_dir_populated "$VIM_PACK_DIR/nerdtree"; then
+                run rm -rf "$VIM_PACK_DIR/nerdtree"
+                run cp -r "$OFFLINE_VIM_NERDTREE" "$VIM_PACK_DIR/nerdtree"
+                ok "Restored nerdtree plugin from offline_src"
+            else
+                info "nerdtree plugin already installed"
+            fi
+        fi
+    else
+        warn "nerdtree offline source not found"
+    fi
 }
 
 # ──────────────────────────────────────────────
@@ -347,6 +367,11 @@ deploy_vim_dir() {
                ! is_dir_populated "$VIM_PACK_DIR/supertab"; then
                 run cp -r "$SCRIPT_DIR/.vim/pack/plugins/start/supertab" "$VIM_PACK_DIR/supertab"
                 ok "Merged supertab from bundled .vim/"
+            fi
+            if is_dir_populated "$SCRIPT_DIR/.vim/pack/plugins/start/nerdtree" && \
+               ! is_dir_populated "$VIM_PACK_DIR/nerdtree"; then
+                run cp -r "$SCRIPT_DIR/.vim/pack/plugins/start/nerdtree" "$VIM_PACK_DIR/nerdtree"
+                ok "Merged nerdtree from bundled .vim/"
             fi
         fi
     else
@@ -420,7 +445,7 @@ post_install_checks() {
     done
 
     # Check Vim plugins
-    for plugin in tabular supertab; do
+    for plugin in tabular supertab nerdtree; do
         if [ -d "$VIM_PACK_DIR/$plugin" ] && is_dir_populated "$VIM_PACK_DIR/$plugin"; then
             ok "Vim plugin: $plugin"
         else
