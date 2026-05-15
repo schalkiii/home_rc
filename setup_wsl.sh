@@ -9,6 +9,8 @@
 #   - Vim plugins: tabular, supertab, nerdtree
 #   - Git configuration
 #   - Emacs verilog-mode (for FPGA/ASIC design)
+#   - WSL default user set to root
+#   - Default shell set to zsh
 #
 # Usage:
 #   cd /path/to/home_rc
@@ -318,6 +320,36 @@ set_default_shell() {
 }
 
 # ──────────────────────────────────────────────
+# Step 8: Configure WSL default user to root
+# ──────────────────────────────────────────────
+configure_wsl_root() {
+    info "Step 8: Configuring WSL default user to root..."
+
+    local wsl_conf="/etc/wsl.conf"
+
+    if $DRY_RUN; then
+        echo "    Would create $wsl_conf with [user] default=root"
+        return
+    fi
+
+    if [ -f "$wsl_conf" ] && grep -q "default=root" "$wsl_conf" 2>/dev/null; then
+        warn "WSL default user is already root, skipping"
+        return
+    fi
+
+    if [ -f "$wsl_conf" ]; then
+        cp "$wsl_conf" "${wsl_conf}.bak"
+        info "Backed up $wsl_conf -> ${wsl_conf}.bak"
+    fi
+
+    cat > "$wsl_conf" <<'EOF'
+[user]
+default=root
+EOF
+    ok "WSL default user set to root (restart WSL to take effect: wsl --shutdown)"
+}
+
+# ──────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────
 main() {
@@ -337,6 +369,7 @@ main() {
     install_vim_plugins
     configure_git
     set_default_shell
+    configure_wsl_root
 
     echo ""
     echo "=========================================="
@@ -347,6 +380,7 @@ main() {
         echo "    1. Restart your terminal or run: zsh"
         echo "    2. Verify: zsh --version"
         echo "    3. Verify: vim --version"
+        echo "    4. Restart WSL to apply root login: wsl --shutdown"
         echo "=========================================="
     fi
 }
