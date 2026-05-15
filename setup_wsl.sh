@@ -90,15 +90,15 @@ preflight_check() {
 }
 
 # ──────────────────────────────────────────────
-# Step 0: Configure Chinese apt mirror
+# Step 1: Configure Chinese apt mirror
 # ──────────────────────────────────────────────
 configure_mirror() {
     if [[ -z "$MIRROR" ]]; then
-        info "Step 0: Skipping apt mirror configuration (use --mirror to enable)"
+        info "Step 1: Skipping apt mirror configuration (use --mirror to enable)"
         return
     fi
 
-    info "Step 0: Configuring apt mirror ($MIRROR)..."
+    info "Step 1: Configuring apt mirror ($MIRROR)..."
 
     local ubuntu_codename
     ubuntu_codename="$(lsb_release -cs 2>/dev/null || :)"
@@ -139,10 +139,10 @@ deb ${mirror_url}/ubuntu/ ${ubuntu_codename}-security main restricted universe m
 }
 
 # ──────────────────────────────────────────────
-# Step 1: System package installation
+# Step 2: System package installation
 # ──────────────────────────────────────────────
 install_packages() {
-    info "Step 1: Installing system packages..."
+    info "Step 2: Installing system packages..."
 
     local packages=(
         zsh
@@ -166,10 +166,10 @@ install_packages() {
 }
 
 # ──────────────────────────────────────────────
-# Step 2: Install Oh My Zsh
+# Step 3: Install Oh My Zsh
 # ──────────────────────────────────────────────
 install_oh_my_zsh() {
-    info "Step 2: Installing Oh My Zsh..."
+    info "Step 3: Installing Oh My Zsh..."
 
     if [ -d "$HOME/.oh-my-zsh" ]; then
         warn "Oh My Zsh already installed, skipping"
@@ -186,10 +186,10 @@ install_oh_my_zsh() {
 }
 
 # ──────────────────────────────────────────────
-# Step 3: Apply configs from local repo
+# Step 4: Apply configs from local repo
 # ──────────────────────────────────────────────
 apply_configs() {
-    info "Step 3: Applying configurations from home_rc..."
+    info "Step 4: Applying configurations from home_rc..."
 
     if $DRY_RUN; then
         echo "    Would copy: .zshrc, .vimrc, .gitconfig, .gitignore"
@@ -209,10 +209,10 @@ apply_configs() {
 }
 
 # ──────────────────────────────────────────────
-# Step 4: Install Zsh plugins
+# Step 5: Install Zsh plugins
 # ──────────────────────────────────────────────
 install_zsh_plugins() {
-    info "Step 4: Installing Zsh plugins..."
+    info "Step 5: Installing Zsh plugins..."
 
     local custom_plugins="$HOME/.oh-my-zsh/custom/plugins"
 
@@ -241,10 +241,10 @@ install_zsh_plugins() {
 }
 
 # ──────────────────────────────────────────────
-# Step 5: Install Vim plugins
+# Step 6: Install Vim plugins
 # ──────────────────────────────────────────────
 install_vim_plugins() {
-    info "Step 5: Installing Vim plugins..."
+    info "Step 6: Installing Vim plugins..."
 
     local vim_pack="$HOME/.vim/pack/plugins/start"
 
@@ -278,10 +278,10 @@ install_vim_plugins() {
 }
 
 # ──────────────────────────────────────────────
-# Step 6: Configure Git
+# Step 7: Configure Git
 # ──────────────────────────────────────────────
 configure_git() {
-    info "Step 6: Configuring Git..."
+    info "Step 7: Configuring Git..."
 
     if $DRY_RUN; then
         echo "    Would copy .gitconfig to $HOME"
@@ -299,10 +299,10 @@ configure_git() {
 }
 
 # ──────────────────────────────────────────────
-# Step 7: Set default shell to zsh
+# Step 8: Set default shell to zsh
 # ──────────────────────────────────────────────
 set_default_shell() {
-    info "Step 7: Setting default shell to zsh..."
+    info "Step 8: Setting default shell to zsh..."
 
     if $DRY_RUN; then
         echo "    Would run: chsh -s $(which zsh)"
@@ -321,10 +321,10 @@ set_default_shell() {
 }
 
 # ──────────────────────────────────────────────
-# Step 8: Configure WSL default user to root
+# Step 0: Configure WSL default user to root
 # ──────────────────────────────────────────────
 configure_wsl_root() {
-    info "Step 8: Configuring WSL default user to root..."
+    info "Step 0: Configuring WSL default user to root..."
 
     local wsl_conf="/etc/wsl.conf"
 
@@ -411,6 +411,7 @@ main() {
     echo ""
 
     preflight_check
+    configure_wsl_root
     configure_mirror
     install_packages
     install_oh_my_zsh
@@ -419,7 +420,6 @@ main() {
     install_vim_plugins
     configure_git
     set_default_shell
-    configure_wsl_root
     install_verible
 
     echo ""
