@@ -11,6 +11,7 @@
 #   - Emacs verilog-mode (for FPGA/ASIC design)
 #   - WSL default user set to root
 #   - Default shell set to zsh
+#   - Verible (Verilog/SystemVerilog lint, format, language server)
 #
 # Usage:
 #   cd /path/to/home_rc
@@ -350,6 +351,55 @@ EOF
 }
 
 # ──────────────────────────────────────────────
+# Step 9: Install Verible (Verilog/SystemVerilog tools)
+# ──────────────────────────────────────────────
+install_verible() {
+    info "Step 9: Installing Verible..."
+
+    local verible_version="v0.0-4053-g89d4d98a"
+    local verible_tarball="verible-${verible_version}-linux-static-x86_64.tar.gz"
+    local verible_url="https://github.com/chipsalliance/verible/releases/download/${verible_version}/${verible_tarball}"
+    local install_dir="/usr/local/bin"
+
+    if command -v verible-verilog-ls &>/dev/null; then
+        warn "Verible already installed: $(verible-verilog-ls --version 2>&1 | head -1), skipping"
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo "    Would download: $verible_url"
+        echo "    Would extract and install to: $install_dir"
+        return
+    fi
+
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+
+    info "Downloading Verible ${verible_version}..."
+    if ! curl -fsSL "$verible_url" -o "$tmp_dir/$verible_tarball"; then
+        warn "Failed to download Verible, skipping"
+        rm -rf "$tmp_dir"
+        return
+    fi
+
+    info "Extracting Verible..."
+    tar -xzf "$tmp_dir/$verible_tarball" -C "$tmp_dir"
+
+    local extracted_dir
+    extracted_dir="$(find "$tmp_dir" -maxdepth 1 -type d -name "verible-*" | head -1)"
+    if [[ -z "$extracted_dir" ]]; then
+        warn "Failed to find extracted Verible directory, skipping"
+        rm -rf "$tmp_dir"
+        return
+    fi
+
+    info "Installing Verible binaries to $install_dir..."
+    cp "$extracted_dir"/bin/* "$install_dir/"
+    rm -rf "$tmp_dir"
+    ok "Verible ${verible_version} installed to $install_dir"
+}
+
+# ──────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────
 main() {
@@ -370,6 +420,7 @@ main() {
     configure_git
     set_default_shell
     configure_wsl_root
+    install_verible
 
     echo ""
     echo "=========================================="
@@ -381,6 +432,7 @@ main() {
         echo "    2. Verify: zsh --version"
         echo "    3. Verify: vim --version"
         echo "    4. Restart WSL to apply root login: wsl --shutdown"
+        echo "    5. Verify Verible: verible-verilog-ls --version"
         echo "=========================================="
     fi
 }

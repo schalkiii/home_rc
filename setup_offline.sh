@@ -11,6 +11,7 @@
 #   - Vim plugins (from offline_src/): tabular, supertab, nerdtree
 #   - Shell/editor/git config files (.zshrc, .vimrc, .gitconfig)
 #   - Emacs verilog-mode (from elisp/)
+#   - Verible (from offline_src/verible-*.tar.gz, optional)
 #
 # Usage:
 #   cd home_rc/
@@ -37,6 +38,9 @@ OFFLINE_ZSH_SYNTAX_HIGHLIGHTING="$SCRIPT_DIR/offline_src/zsh-syntax-highlighting
 OFFLINE_VIM_TABULAR="$SCRIPT_DIR/offline_src/tabular"
 OFFLINE_VIM_SUPERTAB="$SCRIPT_DIR/offline_src/supertab"
 OFFLINE_VIM_NERDTREE="$SCRIPT_DIR/offline_src/nerdtree"
+
+# Verible offline tarball (optional)
+VERIBLE_TARBALL="$(ls "$SCRIPT_DIR"/offline_src/verible-*.tar.gz 2>/dev/null | head -1 || true)"
 
 # Target paths
 OH_MY_ZSH_DIR="$HOME/.oh-my-zsh"
@@ -385,10 +389,52 @@ deploy_elisp() {
 }
 
 # ──────────────────────────────────────────────
-# Step 9: Post-install checks
+# Step 9: Install Verible from offline_src (optional)
+# ──────────────────────────────────────────────
+install_verible() {
+    info "Step 9: Installing Verible from offline_src..."
+
+    if command -v verible-verilog-ls &>/dev/null; then
+        warn "Verible already installed: $(verible-verilog-ls --version 2>&1 | head -1), skipping"
+        return
+    fi
+
+    if [[ -z "$VERIBLE_TARBALL" ]]; then
+        info "No Verible tarball found in offline_src/ (skipping)"
+        info "  To include Verible, place verible-*-linux-static-x86_64.tar.gz in offline_src/"
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo "    Would install Verible from: $VERIBLE_TARBALL"
+        return
+    fi
+
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+
+    info "Extracting Verible from $(basename "$VERIBLE_TARBALL")..."
+    tar -xzf "$VERIBLE_TARBALL" -C "$tmp_dir"
+
+    local extracted_dir
+    extracted_dir="$(find "$tmp_dir" -maxdepth 1 -type d -name "verible-*" | head -1)"
+    if [[ -z "$extracted_dir" ]]; then
+        warn "Failed to find extracted Verible directory, skipping"
+        rm -rf "$tmp_dir"
+        return
+    fi
+
+    info "Installing Verible binaries to /usr/local/bin/..."
+    cp "$extracted_dir"/bin/* /usr/local/bin/
+    rm -rf "$tmp_dir"
+    ok "Verible installed from offline_src"
+}
+
+# ──────────────────────────────────────────────
+# Step 10: Post-install checks
 # ──────────────────────────────────────────────
 post_install_checks() {
-    info "Step 9: Post-install checks..."
+    info "Step 10: Post-install checks..."
 
     local all_ok=true
 
@@ -445,6 +491,13 @@ post_install_checks() {
         fi
     fi
 
+    # Check Verible
+    if command -v verible-verilog-ls &>/dev/null; then
+        ok "Verible: $(verible-verilog-ls --version 2>&1 | head -1)"
+    else
+        info "Verible not installed (optional, for Verilog/SystemVerilog development)"
+    fi
+
     echo ""
     if $all_ok; then
         ok "All checks passed"
@@ -477,6 +530,7 @@ It deploys:
   - Zsh plugins (from offline_src/)
   - Vim plugins (from offline_src/)
   - Emacs verilog-mode (from elisp/)
+  - Verible (from offline_src/verible-*.tar.gz, optional)
 
 Run this script from the root of the home_rc repository:
   cd /path/to/home_rc
@@ -525,6 +579,8 @@ main() {
     echo ""
     deploy_elisp
     echo ""
+    install_verible
+    echo ""
     post_install_checks
 
     echo ""
@@ -539,6 +595,7 @@ main() {
         echo "    2. Review ~/.zshrc and customize as needed"
         echo "    3. If zsh is not your default shell:"
         echo "       chsh -s \$(which zsh)"
+        echo "    4. Verify Verible (if installed): verible-verilog-ls --version"
         echo ""
         echo "  Backup saved to: $BACKUP_DIR"
     fi
