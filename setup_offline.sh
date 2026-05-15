@@ -11,7 +11,7 @@
 #   - Vim plugins (from offline_src/): tabular, supertab, nerdtree
 #   - Shell/editor/git config files (.zshrc, .vimrc, .gitconfig)
 #   - Emacs verilog-mode (from elisp/)
-#   - Verible (from offline_src/verible-*.tar.gz, optional)
+#   - Verible (from offline_src/verible/bin/, optional)
 #
 # Usage:
 #   cd home_rc/
@@ -39,8 +39,8 @@ OFFLINE_VIM_TABULAR="$SCRIPT_DIR/offline_src/tabular"
 OFFLINE_VIM_SUPERTAB="$SCRIPT_DIR/offline_src/supertab"
 OFFLINE_VIM_NERDTREE="$SCRIPT_DIR/offline_src/nerdtree"
 
-# Verible offline tarball (optional)
-VERIBLE_TARBALL="$(ls "$SCRIPT_DIR"/offline_src/verible-*.tar.gz 2>/dev/null | head -1 || true)"
+# Verible offline directory (optional)
+VERIBLE_DIR="$SCRIPT_DIR/offline_src/verible"
 
 # Target paths
 OH_MY_ZSH_DIR="$HOME/.oh-my-zsh"
@@ -399,34 +399,19 @@ install_verible() {
         return
     fi
 
-    if [[ -z "$VERIBLE_TARBALL" ]]; then
-        info "No Verible tarball found in offline_src/ (skipping)"
-        info "  To include Verible, place verible-*-linux-static-x86_64.tar.gz in offline_src/"
+    if [ ! -d "$VERIBLE_DIR/bin" ]; then
+        info "No Verible directory found in offline_src/ (skipping)"
+        info "  To include Verible, place extracted verible/ in offline_src/"
         return
     fi
 
     if $DRY_RUN; then
-        echo "    Would install Verible from: $VERIBLE_TARBALL"
-        return
-    fi
-
-    local tmp_dir
-    tmp_dir="$(mktemp -d)"
-
-    info "Extracting Verible from $(basename "$VERIBLE_TARBALL")..."
-    tar -xzf "$VERIBLE_TARBALL" -C "$tmp_dir"
-
-    local extracted_dir
-    extracted_dir="$(find "$tmp_dir" -maxdepth 1 -type d -name "verible-*" | head -1)"
-    if [[ -z "$extracted_dir" ]]; then
-        warn "Failed to find extracted Verible directory, skipping"
-        rm -rf "$tmp_dir"
+        echo "    Would install Verible from: $VERIBLE_DIR"
         return
     fi
 
     info "Installing Verible binaries to /usr/local/bin/..."
-    cp "$extracted_dir"/bin/* /usr/local/bin/
-    rm -rf "$tmp_dir"
+    cp "$VERIBLE_DIR"/bin/* /usr/local/bin/
     ok "Verible installed from offline_src"
 }
 
@@ -530,7 +515,7 @@ It deploys:
   - Zsh plugins (from offline_src/)
   - Vim plugins (from offline_src/)
   - Emacs verilog-mode (from elisp/)
-  - Verible (from offline_src/verible-*.tar.gz, optional)
+  - Verible (from offline_src/verible/bin/, optional)
 
 Run this script from the root of the home_rc repository:
   cd /path/to/home_rc

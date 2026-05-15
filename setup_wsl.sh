@@ -329,11 +329,11 @@ configure_wsl_root() {
     local wsl_conf="/etc/wsl.conf"
 
     if $DRY_RUN; then
-        echo "    Would create $wsl_conf with [user] default=root"
+        echo "    Would configure $wsl_conf with [user] default=root"
         return
     fi
 
-    if [ -f "$wsl_conf" ] && grep -q "default=root" "$wsl_conf" 2>/dev/null; then
+    if [ -f "$wsl_conf" ] && grep -q "^default=root" "$wsl_conf" 2>/dev/null; then
         warn "WSL default user is already root, skipping"
         return
     fi
@@ -343,10 +343,12 @@ configure_wsl_root() {
         info "Backed up $wsl_conf -> ${wsl_conf}.bak"
     fi
 
-    cat > "$wsl_conf" <<'EOF'
-[user]
-default=root
-EOF
+    if grep -q "^\[user\]" "$wsl_conf" 2>/dev/null; then
+        sed -i '/^\[user\]/,/^\[/ { /^default=/d }' "$wsl_conf"
+        sed -i '/^\[user\]/a default=root' "$wsl_conf"
+    else
+        printf '\n[user]\ndefault=root\n' >> "$wsl_conf"
+    fi
     ok "WSL default user set to root (restart WSL to take effect: wsl --shutdown)"
 }
 
