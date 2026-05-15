@@ -11,6 +11,7 @@
 #   - Emacs verilog-mode (for FPGA/ASIC design)
 #
 # Usage:
+#   cd /path/to/home_rc
 #   chmod +x setup_wsl.sh
 #   ./setup_wsl.sh
 #   ./setup_wsl.sh --mirror ustc    Use USTC mirror for apt
@@ -21,6 +22,7 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DRY_RUN=false
 MIRROR=""
 
@@ -68,6 +70,20 @@ run() {
     else
         "$@"
     fi
+}
+
+# ──────────────────────────────────────────────
+# Pre-flight check
+# ──────────────────────────────────────────────
+preflight_check() {
+    if [ ! -f "$SCRIPT_DIR/.zshrc" ] || [ ! -d "$SCRIPT_DIR/offline_src" ]; then
+        error "Cannot find home_rc files in current directory."
+        error "Please run this script from the root of the home_rc repository."
+        echo "  Expected to find: .zshrc, offline_src/, .oh-my-zsh/, etc."
+        echo "  Current directory: $SCRIPT_DIR"
+        exit 1
+    fi
+    ok "Running from home_rc repository root"
 }
 
 # ──────────────────────────────────────────────
@@ -129,6 +145,7 @@ install_packages() {
         zsh
         git
         vim
+        vim-gtk3
         curl
         wget
         tree
@@ -166,37 +183,24 @@ install_oh_my_zsh() {
 }
 
 # ──────────────────────────────────────────────
-# Step 3: Clone home_rc and apply configs
+# Step 3: Apply configs from local repo
 # ──────────────────────────────────────────────
 apply_configs() {
     info "Step 3: Applying configurations from home_rc..."
 
-    local repo_url="https://github.com/schalkiii/home_rc.git"
-    local tmp_dir="/tmp/home_rc"
-
     if $DRY_RUN; then
-        echo "    Would clone $repo_url to $tmp_dir"
         echo "    Would copy: .zshrc, .vimrc, .gitconfig, .gitignore"
         echo "    Would copy directories: .vim, .oh-my-zsh/custom, elisp"
         return
     fi
 
-    if [ ! -d "$tmp_dir" ]; then
-        git clone "$repo_url" "$tmp_dir"
-    else
-        warn "$tmp_dir already exists, pulling latest"
-        cd "$tmp_dir" && git pull
-    fi
+    cp "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+    cp "$SCRIPT_DIR/.vimrc" "$HOME/.vimrc"
+    cp "$SCRIPT_DIR/.gitignore" "$HOME/.gitignore"
 
-    cd "$tmp_dir"
-
-    cp .zshrc "$HOME/.zshrc"
-    cp .vimrc "$HOME/.vimrc"
-    cp .gitignore "$HOME/.gitignore"
-
-    cp -r .vim "$HOME/"
-    cp -r elisp "$HOME/"
-    cp -r .oh-my-zsh/custom "$HOME/.oh-my-zsh/"
+    cp -r "$SCRIPT_DIR/.vim" "$HOME/"
+    cp -r "$SCRIPT_DIR/elisp" "$HOME/"
+    cp -r "$SCRIPT_DIR/.oh-my-zsh/custom" "$HOME/.oh-my-zsh/"
 
     ok "Configuration files applied"
 }
@@ -282,7 +286,7 @@ configure_git() {
         return
     fi
 
-    cp /tmp/home_rc/.gitconfig "$HOME/.gitconfig" 2>/dev/null || true
+    cp "$SCRIPT_DIR/.gitconfig" "$HOME/.gitconfig" 2>/dev/null || true
 
     if [ ! -f "$HOME/.gitconfig" ]; then
         git config --global user.name "schalkiii"
@@ -324,6 +328,7 @@ main() {
     echo "=========================================="
     echo ""
 
+    preflight_check
     configure_mirror
     install_packages
     install_oh_my_zsh

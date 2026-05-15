@@ -11,7 +11,7 @@ This repository stores my home directory configuration files (`~/.zshrc`, `~/.vi
 | Category | Content | Description |
 |----------|---------|-------------|
 | **Shell** | `.zshrc`, `.oh-my-zsh/` | Zsh + Oh My Zsh with ys theme and plugins |
-| **Editor** | `.vimrc`, `.vim/` | Vim with tabular & supertab plugins |
+| **Editor** | `.vimrc`, `.vim/` | Vim with tabular, supertab & nerdtree plugins |
 | **Git** | `.gitconfig`, `.gitignore` | Git config with GitHub credential helper |
 | **Emacs** | `elisp/` | Verilog mode for HDL editing |
 | **Offline** | `offline_src/` | Plugin source backups for air-gapped install |
@@ -73,10 +73,18 @@ For WSL (Windows Subsystem for Linux):
    wsl --install -d Ubuntu
    ```
 
-2. After WSL starts, run the setup commands above, or use the enhanced script:
+2. After WSL starts, clone this repo and run the setup script:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/schalkiii/home_rc/main/setup_wsl.sh -o setup.sh
-   chmod +x setup.sh && ./setup.sh
+   git clone https://github.com/schalkiii/home_rc.git
+   cd home_rc
+   ./setup_wsl.sh
+   ```
+
+3. Optionally configure Chinese apt mirrors for faster downloads:
+   ```bash
+   ./setup_wsl.sh --mirror ustc     # USTC mirror
+   ./setup_wsl.sh --mirror aliyun   # Aliyun mirror
+   ./setup_wsl.sh --mirror tuna     # Tsinghua mirror
    ```
 
 ## Configuration Details
@@ -114,6 +122,7 @@ For WSL (Windows Subsystem for Linux):
 - **Plugins**:
   - `tabular` - align text/table formatting
   - `supertab` - Tab key for omni-completion
+  - `nerdtree` - File system explorer
 
 ### Git (`.gitconfig`)
 
@@ -136,12 +145,14 @@ home_rc/
 │       └── zsh-syntax-highlighting/   # Syntax highlighting
 ├── .vim/pack/plugins/start/
 │   ├── tabular/                       # Text alignment
-│   └── supertab/                      # Tab completion
+│   ├── supertab/                      # Tab completion
+│   └── nerdtree/                      # File explorer
 ├── elisp/
 │   └── verilog-mode.el                # Verilog mode for Emacs
 ├── offline_src/                       # Plugin backups for offline use
 │   ├── supertab.vmb / supertab/
 │   ├── tabular/
+│   ├── nerdtree/                      # NERDTree offline source
 │   ├── zsh-autosuggestions/
 │   └── zsh-syntax-highlighting/
 ├── .gitconfig                         # Git configuration
@@ -150,7 +161,9 @@ home_rc/
 ├── .vimrc                             # Vim configuration
 ├── .zshrc                             # Zsh configuration
 ├── setup.sh                           # Original setup script
-└── setup_wsl.sh                       # Enhanced WSL setup script
+├── setup_offline.sh                   # Offline setup script
+├── setup_wsl.sh                       # WSL setup script
+└── README.md                          # This file
 ```
 
 ## Offline Installation
@@ -162,6 +175,7 @@ If you're on an air-gapped machine, the `offline_src/` directory contains all pl
 gvim -c "%so" offline_src/supertab.vmb
 cp -r offline_src/tabular ~/.vim/pack/plugins/start/
 cp -r offline_src/supertab ~/.vim/pack/plugins/start/
+cp -r offline_src/nerdtree ~/.vim/pack/plugins/start/
 
 # For Zsh plugins
 cp -r offline_src/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/
