@@ -14,7 +14,11 @@
 [core]
 	whitespace = trailing-space
 	excludesfile = ~/.gitignore_global
+	editor = vim
 [apply]
 	whitespace = fix
+[merge]
+	commit = no
+	ff = false
 [credential]
 	helper = store

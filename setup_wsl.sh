@@ -286,6 +286,7 @@ configure_git() {
     if $DRY_RUN; then
         echo "    Would copy .gitconfig to $HOME"
         echo "    Would set user.name and user.email"
+        echo "    Would set core.editor, merge.commit, merge.ff"
         return
     fi
 
@@ -296,6 +297,11 @@ configure_git() {
         git config --global user.email "423338274@qq.com"
         ok "Git user configured"
     fi
+
+    git config --global core.editor "$(which vim)"
+    git config --global merge.commit no
+    git config --global merge.ff false
+    ok "Git editor and merge behavior configured"
 }
 
 # ──────────────────────────────────────────────

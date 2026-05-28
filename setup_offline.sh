@@ -198,10 +198,29 @@ deploy_config_files() {
 }
 
 # ──────────────────────────────────────────────
-# Step 4: Install Oh My Zsh (offline)
+# Step 4: Configure Git
+# ──────────────────────────────────────────────
+configure_git() {
+    info "Step 4: Configuring Git..."
+
+    if $DRY_RUN; then
+        echo "    Would set user.name, user.email, core.editor, merge.commit, merge.ff"
+        return
+    fi
+
+    git config --global user.name "schalkiii"
+    git config --global user.email "423338274@qq.com"
+    git config --global core.editor "$(which vim)"
+    git config --global merge.commit no
+    git config --global merge.ff false
+    ok "Git configured"
+}
+
+# ──────────────────────────────────────────────
+# Step 5: Install Oh My Zsh (offline)
 # ──────────────────────────────────────────────
 install_oh_my_zsh() {
-    info "Step 4: Installing Oh My Zsh (offline)..."
+    info "Step 5: Installing Oh My Zsh (offline)..."
 
     if [ -d "$OH_MY_ZSH_DIR" ] && [ -f "$OH_MY_ZSH_DIR/oh-my-zsh.sh" ]; then
         ok "Oh My Zsh already installed at $OH_MY_ZSH_DIR"
@@ -219,10 +238,10 @@ install_oh_my_zsh() {
 }
 
 # ──────────────────────────────────────────────
-# Step 5: Install Zsh plugins from offline_src
+# Step 6: Install Zsh plugins from offline_src
 # ──────────────────────────────────────────────
 install_zsh_plugins() {
-    info "Step 5: Installing Zsh plugins from offline_src..."
+    info "Step 6: Installing Zsh plugins from offline_src..."
 
     run mkdir -p "$ZSH_CUSTOM_PLUGINS"
 
@@ -268,10 +287,10 @@ install_zsh_plugins() {
 }
 
 # ──────────────────────────────────────────────
-# Step 6: Install Vim plugins from offline_src
+# Step 7: Install Vim plugins from offline_src
 # ──────────────────────────────────────────────
 install_vim_plugins() {
-    info "Step 6: Installing Vim plugins from offline_src..."
+    info "Step 7: Installing Vim plugins from offline_src..."
 
     run mkdir -p "$VIM_PACK_DIR"
 
@@ -332,10 +351,10 @@ install_vim_plugins() {
 }
 
 # ──────────────────────────────────────────────
-# Step 7: Deploy bundled .vim/ directory
+# Step 8: Deploy bundled .vim/ directory
 # ──────────────────────────────────────────────
 deploy_vim_dir() {
-    info "Step 7: Deploying bundled .vim/ directory..."
+    info "Step 8: Deploying bundled .vim/ directory..."
 
     if [ -d "$SCRIPT_DIR/.vim" ] && [ -d "$SCRIPT_DIR/.vim/pack" ]; then
         if [ ! -d "$HOME/.vim/pack" ]; then
@@ -366,10 +385,10 @@ deploy_vim_dir() {
 }
 
 # ──────────────────────────────────────────────
-# Step 8: Deploy Emacs elisp files
+# Step 9: Deploy Emacs elisp files
 # ──────────────────────────────────────────────
 deploy_elisp() {
-    info "Step 8: Deploying Emacs elisp files..."
+    info "Step 9: Deploying Emacs elisp files..."
 
     if [ -d "$SCRIPT_DIR/elisp" ] && [ "$(ls -A "$SCRIPT_DIR/elisp" 2>/dev/null | wc -l)" -gt 0 ]; then
         run mkdir -p "$HOME/elisp"
@@ -389,10 +408,10 @@ deploy_elisp() {
 }
 
 # ──────────────────────────────────────────────
-# Step 9: Install Verible from offline_src (optional)
+# Step 10: Install Verible from offline_src (optional)
 # ──────────────────────────────────────────────
 install_verible() {
-    info "Step 9: Installing Verible from offline_src..."
+    info "Step 10: Installing Verible from offline_src..."
 
     if command -v verible-verilog-ls &>/dev/null; then
         warn "Verible already installed: $(verible-verilog-ls --version 2>&1 | head -1), skipping"
@@ -416,10 +435,10 @@ install_verible() {
 }
 
 # ──────────────────────────────────────────────
-# Step 10: Post-install checks
+# Step 11: Post-install checks
 # ──────────────────────────────────────────────
 post_install_checks() {
-    info "Step 10: Post-install checks..."
+    info "Step 11: Post-install checks..."
 
     local all_ok=true
 
@@ -553,6 +572,8 @@ main() {
     backup_existing
     echo ""
     deploy_config_files
+    echo ""
+    configure_git
     echo ""
     install_oh_my_zsh
     echo ""
