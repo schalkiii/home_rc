@@ -38,7 +38,7 @@ chmod +x setup_offline.sh
 ```bash
 # 1. Install dependencies
 sudo apt-get update
-sudo apt-get install -y zsh git vim curl wget tree
+sudo apt-get install -y zsh git vim curl wget tree fonts-noto-cjk
 
 # 2. Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended

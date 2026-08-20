@@ -153,6 +153,7 @@ install_packages() {
         wget
         tree
         grep
+        fonts-noto-cjk
     )
 
     if $DRY_RUN; then
