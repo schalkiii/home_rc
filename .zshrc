@@ -150,3 +150,14 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# ===== 终端 tab 标题 =====
+# cd 后立即把终端 tab/窗口标题更新为当前目录
+# 用 OSC 0(\e]0;...)同时设置窗口与 tab 标题，兼容性最好；
+# 默认依赖 oh-my-zsh 在 precmd 里用 OSC 1/2 设置，部分终端对 OSC 1 的 tab 标题支持差，导致 tab 标题不刷新
+set_terminal_title() {
+    print -n "\e]0;${PWD:t}\a"
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd set_terminal_title
+add-zsh-hook precmd set_terminal_title
